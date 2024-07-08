@@ -1,32 +1,33 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import { ClipLoader } from 'react-spinners';
 
-function Demands() {
+function ApprovedDemands() {
     const [demandes, setDemandes] = useState([]);
     const [isLoading, setIsLoading] = useState(false);
     const [currentPage, setCurrentPage] = useState(1);
-    const [demandsPerPage] = useState(10); // 10 rows per page
+    const demandsPerPage = 10;
+
+    const token = localStorage.getItem('token');
+    const header = {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+    };
 
     const getMyDemandes = async () => {
-        const id = localStorage.getItem('id');
-        const token = localStorage.getItem('token');
-        const header = {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-        };
         try {
             const response = await fetch(
-                `https://localhost:5000/demandeTransaction/DemandeCardQueries/getDemandeByUserId/${id}`,
+                "https://localhost:5000/demandeTransaction/DemandeCardQueries",
                 {
                     method: "GET",
                     headers: header,
                 }
             );
             const data = await response.json();
-            console.log(data);
-            setDemandes(data);
+            // Filter the demandes array to include only approved demandes
+            const approvedDemandes = data.filter(demande => demande.status === true);
+            setDemandes(approvedDemandes);
         } catch (error) {
-            console.log(error);
+            console.error('Error fetching demands:', error);
         } finally {
             setIsLoading(false);
         }
@@ -59,6 +60,7 @@ function Demands() {
             )}
             {!isLoading && (
                 <>
+                    <div className='mx-2 mb-3'>Vous avez <b>{demandes.length}</b> demandes de carte de restaurant approuvées</div>
                     <table className="table table-hover">
                         <thead>
                             <tr>
@@ -73,13 +75,7 @@ function Demands() {
                                     <td>{indexOfFirstDemande + index + 1}</td>
                                     <td>{new Date(demande.date).toLocaleDateString()} à {new Date(demande.date).toLocaleTimeString()}</td>
                                     <td>
-                                        {demande.status === null ? (
-                                            <span className="badge badge-warning">en cours</span>
-                                        ) : demande.status === true ? (
-                                            <span className="badge badge-success">approuvée</span>
-                                        ) : demande.status === false ? (
-                                            <span className="badge badge-danger">refusée</span>
-                                        ) : null}
+                                        <span className="badge badge-success">approuvée</span>
                                     </td>
                                 </tr>
                             ))}
@@ -102,4 +98,4 @@ function Demands() {
     );
 }
 
-export default Demands;
+export default ApprovedDemands;

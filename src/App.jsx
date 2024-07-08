@@ -8,6 +8,8 @@ import Demands from './FrontOffice/mes demandes/Demands'
 import PageNotFound from './FrontOffice/404/PageNotFound'
 import HomeAdmin from './BackOffice/home/HomeAdmin'
 import DemandesCarte from './BackOffice/Demandes/DemandesCarte'
+import ApprovedDemands from './BackOffice/ApprovedDemands/ApprovedDemands'
+import RejectedDemands from './BackOffice/RejectedDemands/RejectedDemands'
 
 function App() {
 
@@ -19,7 +21,8 @@ function App() {
         <Route path="/homeAdmin" element={<HomeAdmin />}>
 
              <Route index element={<DemandesCarte/>} />
-
+              <Route path='ApprovedDemands' element={<ApprovedDemands/>}/>
+              <Route path='RejectedDemands' element={<RejectedDemands/>}/>
 
         </Route>
         <Route path="/home" element={<Home />}>

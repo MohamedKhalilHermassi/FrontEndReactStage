@@ -13,7 +13,6 @@ function Home() {
   
 
     <div id="wrapper"> 
-    <SideBar></SideBar>
 
       <div id="content-wrapper" className="d-flex flex-column">
       <NavBar></NavBar>
