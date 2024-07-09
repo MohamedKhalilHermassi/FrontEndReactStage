@@ -65,6 +65,7 @@ function RejectedDemands() {
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Date de la demande</th>
+                                <th scope="col">Employé</th>
                                 <th scope="col">Status</th>
                             </tr>
                         </thead>
@@ -73,6 +74,7 @@ function RejectedDemands() {
                                 <tr key={demande.id}>
                                     <td>{indexOfFirstDemande + index + 1}</td>
                                     <td>{new Date(demande.date).toLocaleDateString()} à {new Date(demande.date).toLocaleTimeString()}</td>
+                                    <td>{demande.userEmail}</td>
                                     <td>
                                         <span className="badge badge-danger">rejetée</span>
                                     </td>

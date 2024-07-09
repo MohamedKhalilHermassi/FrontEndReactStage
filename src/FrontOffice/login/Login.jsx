@@ -1,7 +1,7 @@
 import { ClipLoader } from 'react-spinners';
-import './Login.css'; // Custom CSS for Login page styling
+import './Login.css'; 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import {jwtDecode} from 'jwt-decode';
 
 function Login() {
@@ -26,7 +26,6 @@ function Login() {
   };
 
   const validatePassword = (password) => {
-    // Example password regex: minimum 8 characters, at least one letter and one number
     const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
     return passwordRegex.test(password);
   };
@@ -111,7 +110,7 @@ function Login() {
         <div className="container">
           <div className="row gx-lg-5 align-items-center">
             <div className="col-lg-6 mb-5 mb-lg-0">
-              <h1 className="my-5 display-3 fw-bold ls-tight">
+              <h1 className="my-5 display-3 fw-bold ls-tight text-black">
                 Restaurant Card<br />
                 <span className="text-primary">Management App</span>
               </h1>
@@ -126,7 +125,7 @@ function Login() {
               <div className="card">
                 <div className="card-body py-5 px-md-5">
                   <h5 className="mb-5 display-7 fw-bold ls-tight">
-                    Login to Your Account<br />
+                    Accedez à votre compte<br />
                     <span className="text-primary"></span>
                   </h5>
                   {isLoading && (
@@ -160,9 +159,12 @@ function Login() {
                       <label className="form-label" htmlFor="password">Password</label>
                     </div>
                     <button type="submit" data-mdb-button-init data-mdb-ripple-init className="btn btn-primary btn-block" disabled={isLoading}>
-                      Login
+                      Se connecter
                     </button>
                   </form>
+                  <Link to={'/'}><a  data-mdb-button-init data-mdb-ripple-init className="btn btn-secondary btn-block mt-2">
+                      Vous n'avez pas un compte ? Créez-en un
+                    </a></Link> 
                 </div>
               </div>
             </div>

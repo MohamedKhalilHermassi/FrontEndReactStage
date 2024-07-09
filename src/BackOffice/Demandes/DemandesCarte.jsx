@@ -89,6 +89,7 @@ function DemandesCarte() {
                             <tr>
                                 <th scope="col">#</th>
                                 <th scope="col">Date de la demande</th>
+                                <th scope="col">Employé</th>
                                 <th scope="col">Status</th>
                                 <th scope="col">Actions</th>
                             </tr>
@@ -98,16 +99,17 @@ function DemandesCarte() {
                                 <tr key={demande.id}>
                                     <td>{index + 1}</td>
                                     <td>{new Date(demande.date).toLocaleDateString()} à {new Date(demande.date).toLocaleTimeString()}</td>
+                                    <td>{demande.userEmail}</td>
                                     <td>
-                                        <span className={`badge ${demande.status === 'approved' ? 'badge-success' : demande.status === 'rejected' ? 'badge-danger' : 'badge-warning'}`}>
+                                        <span className={`badge ${demande.status === 'approuvée' ? 'badge-success' : demande.status === 'rejetée' ? 'badge-danger' : 'badge-warning'}`}>
                                             {demande.status === null ? 'en cours' : demande.status}
-                                        </span>
+                                        </span> 
                                     </td>
                                     <td>
                                         <button 
                                             disabled={modifiedDemands.includes(demande.id)} 
                                             onClick={() => approveDemand(demande.id)} 
-                                            className='btn btn-success'
+                                            className='btn btn-success mx-1'
                                         >
                                             Approuver
                                         </button>

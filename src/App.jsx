@@ -10,6 +10,7 @@ import HomeAdmin from './BackOffice/home/HomeAdmin'
 import DemandesCarte from './BackOffice/Demandes/DemandesCarte'
 import ApprovedDemands from './BackOffice/ApprovedDemands/ApprovedDemands'
 import RejectedDemands from './BackOffice/RejectedDemands/RejectedDemands'
+import MyCard from './FrontOffice/MyCard/MyCard'
 
 function App() {
 
@@ -28,6 +29,7 @@ function App() {
         <Route path="/home" element={<Home />}>
 
              <Route index element={<LandingPage />} />
+             <Route path="macarte" element={<MyCard />} />
 
             <Route path="demandeCarte" element={<Login />} />
             <Route path="mesdemandes" element={<Demands />} />
