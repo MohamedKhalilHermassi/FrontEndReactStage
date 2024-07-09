@@ -1,7 +1,6 @@
-import { Link, useNavigate } from "react-router-dom"
+import { Link } from "react-router-dom"
 
 function SideBar() {
-  const navigate = useNavigate();
     return (
  <ul className="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion" id="accordionSidebar">
  {/* Sidebar - Brand */}
@@ -43,11 +42,8 @@ function SideBar() {
    </a>
    <div id="collapseUtilities" className="collapse" aria-labelledby="headingUtilities" data-parent="#accordionSidebar">
      <div className="bg-white py-2 collapse-inner rounded">
-       <h6 className="collapse-header">Custom Utilities:</h6>
-       <a className="collapse-item" href="utilities-color.html">Colors</a>
-       <a className="collapse-item" href="utilities-border.html">Borders</a>
-       <a className="collapse-item" href="utilities-animation.html">Animations</a>
-       <a className="collapse-item" href="utilities-other.html">Other</a>
+       <h6 className="collapse-header">Cartes</h6>
+       <Link to={'AllCards'} style={{ textDecoration: 'none' }}><a className="collapse-item">Liste des cartes</a></Link>
      </div>
    </div>
  </li>

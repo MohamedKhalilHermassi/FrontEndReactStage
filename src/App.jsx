@@ -11,6 +11,8 @@ import DemandesCarte from './BackOffice/Demandes/DemandesCarte'
 import ApprovedDemands from './BackOffice/ApprovedDemands/ApprovedDemands'
 import RejectedDemands from './BackOffice/RejectedDemands/RejectedDemands'
 import MyCard from './FrontOffice/MyCard/MyCard'
+import AllCards from './BackOffice/AllCards/AllCards'
+import Transactions from './BackOffice/Transactions/Transactions'
 
 function App() {
 
@@ -24,6 +26,8 @@ function App() {
              <Route index element={<DemandesCarte/>} />
               <Route path='ApprovedDemands' element={<ApprovedDemands/>}/>
               <Route path='RejectedDemands' element={<RejectedDemands/>}/>
+              <Route path='AllCards' element={<AllCards/>}/>
+              <Route path='Transactions/:cardId' element={<Transactions/>}/>
 
         </Route>
         <Route path="/home" element={<Home />}>
