@@ -39,7 +39,7 @@ function Transactions() {
                 {
                     method: "GET",
                     headers: header,
-                }
+                } 
             );
             const data = await response.json();
             setCard(data);
@@ -71,7 +71,7 @@ function Transactions() {
     const handleReloadClick = async () => {
         console.log("Reloading card with amount:", reloadAmount);
         await rechargerCarte(cardId, reloadAmount);
-        setReloadAmount(""); // Clear reload amount input
+        setReloadAmount(""); 
     };
 
     useEffect(() => {
