@@ -113,14 +113,11 @@ function LandingPage() {
           <div className="d-flex justify-content-center">          <img width="360" height="300" src="https://static-00.iconduck.com/assets.00/transaction-illustration-2048x1568-ox8kabuo.png" alt="order-completed"/><br />
           </div>
           
-            Si vous voulez déposer une nouvelle demande de carte de Restaurant veuillez cliquer sur le bouton ci-dessous. Votre demande sera traitée par un administrateur et vous serez notifié dans les plus brefs délais.
-            <br />
+Vous pouvez suivre toutes vos transactions à tout moment à travers un simple clique.            <br />
          
-                <a onClick={deposerDemande} className="btn btn-primary btn-icon-split mt-3">
-                  <span className="text">Déposer une demande de carte</span>
-                </a>
-                <Link to="/home/mesdemandes" className="btn btn-secondary btn-icon-split ml-3 mt-3">
-                  <span className="text">Consulter vos demandes</span>
+             
+                <Link to="/home/MyTransactions" className="btn btn-secondary btn-icon-split ml-3 mt-3">
+                  <span className="text">Consulter mes transactions</span>
                 </Link>
             
         

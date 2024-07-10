@@ -28,7 +28,7 @@ function DemandesCarte() {
                     headers: header,
                 }
             );
-            updateDemandStatus(id, 'approved');
+            updateDemandStatus(id, 'approvée');
             setModifiedDemands((prevModified) => [...prevModified, id]);
         } catch (error) {
             console.error('Error approving demand:', error);
@@ -44,7 +44,7 @@ function DemandesCarte() {
                     headers: header,
                 }
             );
-            updateDemandStatus(id, 'rejected');
+            updateDemandStatus(id, 'rejetée');
             setModifiedDemands((prevModified) => [...prevModified, id]);
         } catch (error) {
             console.error('Error rejecting demand:', error);
@@ -101,7 +101,7 @@ function DemandesCarte() {
                                     <td>{new Date(demande.date).toLocaleDateString()} à {new Date(demande.date).toLocaleTimeString()}</td>
                                     <td>{demande.userEmail}</td>
                                     <td>
-                                        <span className={`badge ${demande.status === 'approuvée' ? 'badge-success' : demande.status === 'rejetée' ? 'badge-danger' : 'badge-warning'}`}>
+                                        <span className={`badge ${demande.status === 'approvée' ? 'badge-success' : demande.status === 'rejetée' ? 'badge-danger' : 'badge-warning'}`}>
                                             {demande.status === null ? 'en cours' : demande.status}
                                         </span> 
                                     </td>

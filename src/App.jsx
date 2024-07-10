@@ -13,6 +13,7 @@ import RejectedDemands from './BackOffice/RejectedDemands/RejectedDemands'
 import MyCard from './FrontOffice/MyCard/MyCard'
 import AllCards from './BackOffice/AllCards/AllCards'
 import Transactions from './BackOffice/Transactions/Transactions'
+import MyTransactions from './FrontOffice/MyTransactions/MyTransactions'
 
 function App() {
 
@@ -37,6 +38,7 @@ function App() {
 
             <Route path="demandeCarte" element={<Login />} />
             <Route path="mesdemandes" element={<Demands />} />
+            <Route path="MyTransactions" element={<MyTransactions />} />
 
         </Route>
         <Route path="*" element={<PageNotFound/>} />
