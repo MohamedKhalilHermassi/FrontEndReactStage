@@ -2,6 +2,9 @@ import { useState, useEffect } from "react";
 import './MyTransactions.css';
 import { ClipLoader } from "react-spinners";
 import { Alert } from "react-bootstrap";
+import { Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 function MyTransactions() {
     const token = localStorage.getItem('token');
@@ -9,7 +12,7 @@ function MyTransactions() {
     const [loading, setLoading] = useState(false);
     const [alertMessage, setAlertMessage] = useState("");
     const [alertVariant, setAlertVariant] = useState("success");
-    const [card, setCard] = useState({});
+    const [card, setCard] = useState(null);
     const [montant, setMontant] = useState("");
     const [description, setDescription] = useState("");
     const [newTransaction, setNewTransaction] = useState(null);
@@ -56,6 +59,37 @@ function MyTransactions() {
         }
     };
 
+    const chartData = {
+        labels: transactions.map(transaction => new Date(transaction.date).toLocaleDateString()),
+        datasets: [
+            {
+                label: 'Montant des Transactions',
+                data: transactions.map(transaction => transaction.montant),
+                fill: false,
+                backgroundColor: 'rgba(75,192,192,0.4)',
+                borderColor: 'rgba(75,192,192,1)',
+            },
+        ],
+    };
+    
+    const chartOptions = {
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: 'Date',
+                },
+            },
+            y: {
+                title: {
+                    display: true,
+                    text: 'Montant (TND)',
+                },
+                beginAtZero: true,
+            },
+        },
+    };
+    
     useEffect(() => {
         getCard();
     }, []);
@@ -65,7 +99,7 @@ function MyTransactions() {
         const transaction = {
             montant,
             description,
-            CarteRestoId:card.id
+            CarteRestoId: card.id
         };
 
         try {
@@ -77,24 +111,23 @@ function MyTransactions() {
                     body: JSON.stringify(transaction),
                 }
             );
-            if(response.ok)
-            {
+            if(response.ok) {
                 const data = await response.json();
                 console.log("New transaction added:", data);
+                card.solde -= transaction.montant;
+                setCard({ ...card });
                 setAlertVariant("success");
-                setAlertMessage("Transaction ajouté avec succes");
+                setAlertMessage("Transaction ajoutée avec succès");
                 await getTransactions(card.id);
-
-            }
-            else{
-                console.log('vous n\'avez pas assez de solde')
+            } else {
+                console.log("Vous n'avez pas assez de solde");
                 setAlertVariant("danger");
-                setAlertMessage("Vous n'avez pas assez de solde ");
+                setAlertMessage("Vous n'avez pas assez de solde");
+                setMontant("");
+                setDescription("");
             }
-            
         } catch (error) {
             console.error('Error adding transaction:', error);
-           
         }
 
         setNewTransaction(transaction);
@@ -102,6 +135,12 @@ function MyTransactions() {
         setDescription("");
     };
 
+    if (card==null) {
+        return 
+    }
+    else {
+
+    
     return (
         <>
             {loading && (
@@ -131,6 +170,8 @@ function MyTransactions() {
 
                     <div className="col-lg-7">
                         <div className="accordion accordion-flush" id="accordionFlushExample">
+                            <h2>Historique de mes transactions</h2>
+
                             {transactions.map((transaction, index) => (
                                 <div className="accordion-item" key={transaction.id}>
                                     <h2 className="accordion-header" id={`flush-heading${index}`}>
@@ -168,7 +209,7 @@ function MyTransactions() {
                     </div>
 
                     <div className="row">
-                        <div className="col-lg-6">
+                        <div className="col-lg-6 mx-5 my-5">
                             <h3>Effectuer une transaction</h3>
                             <form onSubmit={handleTransactionSubmit}>
                                 <div className="mb-3">
@@ -193,24 +234,28 @@ function MyTransactions() {
                                 </div>
                                 <button type="submit" className="btn btn-primary">Submit</button>
                                 {alertMessage && (
-              <Alert variant={alertVariant} className="mt-3">
-                {alertMessage}
-              </Alert>
-            )}
+                                    <Alert variant={alertVariant} className="mt-3">
+                                        {alertMessage}
+                                    </Alert>
+                                )}
                             </form>
                             {newTransaction && (
                                 <div className="mt-3">
-                                    <h5>New Transaction:</h5>
+                                    <h5>Nouvelle Transaction:</h5>
                                     <p><strong>Montant:</strong> {newTransaction.montant} TND</p>
                                     <p><strong>Description:</strong> {newTransaction.description}</p>
                                 </div>
                             )}
                         </div>
+                        <div className="col-lg-5 mt-5">
+                            <h3>Graphe de mes transactions</h3>
+                            <Line data={chartData} options={chartOptions} />
+                        </div>
                     </div>
                 </div>
             )}
         </>
-    );
+    );}
 }
 
 export default MyTransactions;

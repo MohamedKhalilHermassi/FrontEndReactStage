@@ -49,43 +49,7 @@ function SideBar() {
  </li>
  {/* Divider */}
  <hr className="sidebar-divider" />
- {/* Heading */}
- <div className="sidebar-heading">
-   Tranasctions
- </div>
- {/* Nav Item - Pages Collapse Menu */}
- <li className="nav-item">
-   <a className="nav-link collapsed" href="#" data-toggle="collapse" data-target="#collapsePages" aria-expanded="true" aria-controls="collapsePages">
-   <img width="28" height="28" src="https://img.icons8.com/pulsar-gradient/48/transaction.png" alt="transaction"/>
-     <span className="mx-2">Cartes Restaurant</span>
-   </a>
-   <div id="collapsePages" className="collapse" aria-labelledby="headingPages" data-parent="#accordionSidebar">
-     <div className="bg-white py-2 collapse-inner rounded">
-       <h6 className="collapse-header">Login Screens:</h6>
-       <a className="collapse-item" href="login.html">Login</a>
-       <a className="collapse-item" href="register.html">Register</a>
-       <a className="collapse-item" href="forgot-password.html">Forgot Password</a>
-       <div className="collapse-divider" />
-       <h6 className="collapse-header">Other Pages:</h6>
-       <a className="collapse-item" href="404.html">404 Page</a>
-       <a className="collapse-item" href="blank.html">Blank Page</a>
-     </div>
-   </div>
- </li>
- {/* Nav Item - Charts */}
- <li className="nav-item">
-   <a className="nav-link" href="charts.html">
-     <i className="fas fa-fw fa-chart-area" />
-     <span>Charts</span></a>
- </li>
- {/* Nav Item - Tables */}
- <li className="nav-item">
-   <a className="nav-link" href="tables.html">
-     <i className="fas fa-fw fa-table" />
-     <span>Tables</span></a>
- </li>
- {/* Divider */}
- <hr className="sidebar-divider d-none d-md-block" />
+
 
 
 </ul>

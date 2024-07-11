@@ -14,6 +14,7 @@ import MyCard from './FrontOffice/MyCard/MyCard'
 import AllCards from './BackOffice/AllCards/AllCards'
 import Transactions from './BackOffice/Transactions/Transactions'
 import MyTransactions from './FrontOffice/MyTransactions/MyTransactions'
+import Notif from './FrontOffice/notif/Notif'
 
 function App() {
 
@@ -29,6 +30,7 @@ function App() {
               <Route path='RejectedDemands' element={<RejectedDemands/>}/>
               <Route path='AllCards' element={<AllCards/>}/>
               <Route path='Transactions/:cardId' element={<Transactions/>}/>
+              <Route path="MyNotifications" element={<Notif />} />
 
         </Route>
         <Route path="/home" element={<Home />}>
@@ -39,6 +41,7 @@ function App() {
             <Route path="demandeCarte" element={<Login />} />
             <Route path="mesdemandes" element={<Demands />} />
             <Route path="MyTransactions" element={<MyTransactions />} />
+
 
         </Route>
         <Route path="*" element={<PageNotFound/>} />
