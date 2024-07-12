@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import * as signalR from "@microsoft/signalr";
 import { jwtDecode } from "jwt-decode";
 
@@ -14,54 +14,36 @@ function NavBar() {
   };
 
   useEffect(() => {
-    const token = localStorage.getItem("token");
+    const decodedToken = jwtDecode(localStorage.getItem('token'))
+    setName(decodedToken.name);
+    const connection = new signalR.HubConnectionBuilder()
+      .withUrl("https://localhost:7279/notificationHub", {
+        accessTokenFactory: () => {
+          return localStorage.getItem("token"); 
+        }
+      })
+      .build();
 
-    if (token) {
-      const decodedToken = jwtDecode(token);
-      const userName = decodedToken.name;
-    
-      // Correct the URL for negotiation endpoint if needed
-      const hubUrl = "https://localhost:7078/notificationHub";
-    
-      // Set up SignalR connection
-      const connection = new signalR.HubConnectionBuilder()
-        .withUrl(hubUrl)
-        .configureLogging(signalR.LogLevel.Information) 
-        .build();
-    
-      // Set up notification handler
-      connection.on("ReceiveNotification", (message) => {
-        console.log("Notification received:", message);
-        setNotifications((prevNotifications) => [
-          ...prevNotifications,
-          { message, date: new Date().toISOString() },
-        ]);
-      });
-    
-      connection
-        .start()
-        .then(() => {
-          console.log("SignalR connected");
-        })
-        .catch((error) => {
-          console.error("SignalR connection error:", error);
-        });
-    
-      return () => {
-        connection.stop();
-      };
-    }
-    
-    
+    connection.on("ReceiveMessage", (message) => {
+      console.log("Received message: " + message);
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        { message, date: new Date() }
+      ]);
+    });
+
+    connection.start().catch(err => console.error(err.toString()));
+
+    return () => {
+      connection.stop();
+    };
   }, []);
 
   return (
     <nav className="navbar navbar-expand navbar-light bg-white topbar mb-4 static-top shadow">
-      {/* Sidebar Toggle (Topbar) */}
       <button id="sidebarToggleTop" className="btn btn-link d-md-none rounded-circle mr-3">
         <i className="fa fa-bars" />
       </button>
-      {/* Topbar Search */}
       <form className="d-none d-sm-inline-block form-inline mr-auto ml-md-3 my-2 my-md-0 mw-100 navbar-search">
         <div className="input-group">
           <input
@@ -78,20 +60,16 @@ function NavBar() {
           </div>
         </div>
       </form>
-      {/* Topbar Navbar */}
       <ul className="navbar-nav ml-auto">
-        {/* Nav Item - Alerts */}
         <li className="nav-item dropdown no-arrow mx-1">
           <a className="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <i className="fas fa-bell fa-fw" />
-            {/* Counter - Alerts */}
-            <span className="badge badge-danger badge-counter">
+          <span className="badge badge-danger badge-counter">
               {notifications.length > 3 ? "3+" : notifications.length}
             </span>
           </a>
-          {/* Dropdown - Alerts */}
           <div className="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
-            <h6 className="dropdown-header">Alerts Center</h6>
+            <h6 className="dropdown-header">Notifications</h6>
             {notifications.slice(0, 3).map((notification, index) => (
               <a key={index} className="dropdown-item d-flex align-items-center" href="#">
                 <div className="mr-3">
@@ -99,10 +77,10 @@ function NavBar() {
                     <i className="fas fa-file-alt text-white" />
                   </div>
                 </div>
-                <div>
-                  <div className="small text-gray-500">{new Date(notification.date).toLocaleDateString()}</div>
+             <Link style={{ textDecoration: 'none' }} to={'/homeAdmin'}><div>
+                  <div className="small text-gray-900">{new Date(notification.date).toLocaleString()}</div>
                   <span className="font-weight-bold">{notification.message}</span>
-                </div>
+                </div></Link> 
               </a>
             ))}
             <a className="dropdown-item text-center small text-gray-500" href="#">
@@ -110,14 +88,8 @@ function NavBar() {
             </a>
           </div>
         </li>
-        {/* Nav Item - Messages */}
         <li className="nav-item dropdown no-arrow mx-1">
-          <a className="nav-link dropdown-toggle" href="#" id="messagesDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i className="fas fa-envelope fa-fw" />
-            {/* Counter - Messages */}
-            <span className="badge badge-danger badge-counter">7</span>
-          </a>
-          {/* Dropdown - Messages */}
+        
           <div className="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
             <h6 className="dropdown-header">Message Center</h6>
             <a className="dropdown-item d-flex align-items-center" href="#">
@@ -174,13 +146,11 @@ function NavBar() {
           </div>
         </li>
         <div className="topbar-divider d-none d-sm-block" />
-        {/* Nav Item - User Information */}
         <li className="nav-item dropdown no-arrow">
           <a className="nav-link dropdown-toggle" href="#" id="userDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
             <span className="mr-2 d-none d-lg-inline text-gray-600 small">{name}</span>
             <img className="img-profile rounded-circle" src="https://static.vecteezy.com/system/resources/previews/004/819/327/original/male-avatar-profile-icon-of-smiling-caucasian-man-vector.jpg" />
           </a>
-          {/* Dropdown - User Information */}
           <div className="dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="userDropdown">
             <a className="dropdown-item" href="#">
               <i className="fas fa-user fa-sm fa-fw mr-2 text-gray-400" />
