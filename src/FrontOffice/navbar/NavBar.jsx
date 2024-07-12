@@ -31,6 +31,20 @@ function NavBar() {
         { message, date: new Date() }
       ]);
     });
+    connection.on("NotifyUserAccept", (message) => {
+      console.log("Received message: " + message);
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        { message, date: new Date() }
+      ]);
+    });
+    connection.on("NotifyUserReject", (message) => {
+      console.log("Received message: " + message);
+      setNotifications((prevNotifications) => [
+        ...prevNotifications,
+        { message, date: new Date() }
+      ]);
+    });
 
     connection.start().catch(err => console.error(err.toString()));
 
