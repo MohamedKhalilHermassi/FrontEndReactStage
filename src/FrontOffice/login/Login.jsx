@@ -131,7 +131,8 @@ function Login() {
                   {isLoading && (
                     <div className="text-center mb-4">
                       <ClipLoader size={50} color={"#123abc"} loading={isLoading} />
-                    </div>
+                    </div>   
+                     
                   )}
                   {successMessage && <div className="alert alert-success" role="alert">{successMessage}</div>}
                   {errorMessage && <div className="alert alert-danger" role="alert">{errorMessage}</div>}

@@ -2,20 +2,55 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import * as signalR from "@microsoft/signalr";
 import { jwtDecode } from "jwt-decode";
+import axios from "axios";
 
 function NavBar() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [notifications, setNotifications] = useState([]);
-
+  const checkNotifForAdmin = async () => {
+    try {
+      const decodedToken = jwtDecode(localStorage.getItem('token'));
+      if (decodedToken.role === "Admin") {
+        const res = await axios.get("https://localhost:7279/api/Notification/admin@admin.com");
+        const data = res.data; // Access the response data
+        
+        // Map the fetched notifications to match the format expected by your state
+        const adminNotifications = data.map(notification => ({
+          message: notification.message,
+          date: new Date(notification.date)
+        }));
+        
+        const newAdminNotifications = adminNotifications.filter(notification => (
+          !notifications.some(existingNotif => 
+            existingNotif.message === notification.message &&
+            existingNotif.date.getTime() === notification.date.getTime()
+          )
+        ));
+        
+        setNotifications(prevNotifications => [
+          ...prevNotifications,
+          ...newAdminNotifications
+        ]);
+      }
+    } catch (error) {
+      console.error("Error fetching admin notifications:", error);
+    }
+  };
+  
   const logout = () => {
     localStorage.clear();
     navigate("/signin");
   };
 
   useEffect(() => {
+
+
+    checkNotifForAdmin()
     const decodedToken = jwtDecode(localStorage.getItem('token'))
     setName(decodedToken.name);
+    
+
     const connection = new signalR.HubConnectionBuilder()
       .withUrl("https://localhost:7279/notificationHub", {
         accessTokenFactory: () => {
@@ -51,6 +86,7 @@ function NavBar() {
     return () => {
       connection.stop();
     };
+     
   }, []);
 
   return (
