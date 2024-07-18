@@ -77,7 +77,7 @@ function Transactions() {
     useEffect(() => {
         getTransactions(cardId);
         getCard(cardId) ;
-    }, []);
+    }, [transactions]);
 
     return (
         <>

@@ -7,6 +7,7 @@ import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend);
 
 function MyTransactions() {
+
     const token = localStorage.getItem('token');
     const [transactions, setTransactions] = useState([]);
     const [loading, setLoading] = useState(false);
@@ -104,11 +105,10 @@ function MyTransactions() {
 
         try {
             const response = await fetch(
-                `https://localhost:5000/transactions/transactioncommands/addTransactionSimulation`,
+                `https://localhost:5000/card/carterestocommands/dischargecard/${transaction.CarteRestoId}/${transaction.montant}/${transaction.description}`,
                 {
-                    method: "POST",
+                    method: "PUT",
                     headers: header,
-                    body: JSON.stringify(transaction),
                 }
             );
             if(response.ok) {
@@ -130,9 +130,7 @@ function MyTransactions() {
             console.error('Error adding transaction:', error);
         }
 
-        setNewTransaction(transaction);
-        setMontant("");
-        setDescription("");
+        
     };
 
     if (card==null) {

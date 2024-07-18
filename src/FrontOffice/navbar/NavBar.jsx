@@ -1,92 +1,95 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import * as signalR from "@microsoft/signalr";
-import { jwtDecode } from "jwt-decode";
 import axios from "axios";
+import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import * as signalR from "@microsoft/signalr";
+import {jwtDecode} from "jwt-decode";
 
 function NavBar() {
   const navigate = useNavigate();
   const [name, setName] = useState("");
   const [notifications, setNotifications] = useState([]);
+  const token = localStorage.getItem('token');
+  const header = {
+    'Content-Type': 'application/json',
+    Authorization: `Bearer ${token}`,
+  };
+
   const checkNotifForAdmin = async () => {
     try {
-      const decodedToken = jwtDecode(localStorage.getItem('token'));
+      const decodedToken = jwtDecode(localStorage.getItem("token"));
       if (decodedToken.role === "Admin") {
-        const res = await axios.get("https://localhost:7279/api/Notification/admin@admin.com");
-        const data = res.data; // Access the response data
-        
-        // Map the fetched notifications to match the format expected by your state
+        const res = await axios.get("https://localhost:7279/api/Notification/admin@admin.com", { headers: header });
+        const data = res.data;
+
         const adminNotifications = data.map(notification => ({
+          id: notification.notificationId,
           message: notification.message,
-          date: new Date(notification.date)
+          date: new Date(notification.date),
+          read: notification.read,
         }));
-        
-        const newAdminNotifications = adminNotifications.filter(notification => (
-          !notifications.some(existingNotif => 
-            existingNotif.message === notification.message &&
-            existingNotif.date.getTime() === notification.date.getTime()
-          )
-        ));
-        
-        setNotifications(prevNotifications => [
-          ...prevNotifications,
-          ...newAdminNotifications
-        ]);
+
+        setNotifications(prevNotifications => {
+          const newAdminNotifications = adminNotifications.filter(notification => (
+            !prevNotifications.some(existingNotif => 
+              existingNotif.message === notification.message &&
+              existingNotif.date.getTime() === notification.date.getTime()
+            )
+          ));
+          return [...prevNotifications, ...newAdminNotifications];
+        });
       }
     } catch (error) {
       console.error("Error fetching admin notifications:", error);
     }
   };
-  
+
   const logout = () => {
     localStorage.clear();
     navigate("/signin");
   };
 
+  const markAllNotificationsAsRead = async () => {
+    try {
+      const updatedNotifications = await Promise.all(
+        notifications.map(async (notification) => {
+          console.log(notification);
+          await axios.put(`https://localhost:5000/notif/Notification/readNotif/${notification.id}`, { headers: header });
+          return { ...notification, read: true };
+        })
+      );
+      setNotifications(updatedNotifications);
+    } catch (error) {
+      console.error("Error marking notifications as read:", error);
+    }
+  };
+
   useEffect(() => {
-
-
-    checkNotifForAdmin()
-    const decodedToken = jwtDecode(localStorage.getItem('token'))
+    checkNotifForAdmin();
+    const decodedToken = jwtDecode(localStorage.getItem("token"));
     setName(decodedToken.name);
-    
 
     const connection = new signalR.HubConnectionBuilder()
       .withUrl("https://localhost:7279/notificationHub", {
-        accessTokenFactory: () => {
-          return localStorage.getItem("token"); 
-        }
+        accessTokenFactory: () => localStorage.getItem("token")
       })
       .build();
 
-    connection.on("ReceiveMessage", (message) => {
-      console.log("Received message: " + message);
+    const handleNewNotification = (message) => {
       setNotifications((prevNotifications) => [
         ...prevNotifications,
-        { message, date: new Date() }
+        { message, date: new Date(), read: false }
       ]);
-    });
-    connection.on("NotifyUserAccept", (message) => {
-      console.log("Received message: " + message);
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        { message, date: new Date() }
-      ]);
-    });
-    connection.on("NotifyUserReject", (message) => {
-      console.log("Received message: " + message);
-      setNotifications((prevNotifications) => [
-        ...prevNotifications,
-        { message, date: new Date() }
-      ]);
-    });
+    };
+
+    connection.on("ReceiveMessage", handleNewNotification);
+    connection.on("NotifyUserAccept", handleNewNotification);
+    connection.on("NotifyUserReject", handleNewNotification);
 
     connection.start().catch(err => console.error(err.toString()));
 
     return () => {
       connection.stop();
     };
-     
   }, []);
 
   return (
@@ -112,25 +115,35 @@ function NavBar() {
       </form>
       <ul className="navbar-nav ml-auto">
         <li className="nav-item dropdown no-arrow mx-1">
-          <a className="nav-link dropdown-toggle" href="#" id="alertsDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+          <a 
+            className="nav-link dropdown-toggle"
+            id="alertsDropdown" 
+            role="button" 
+            data-toggle="dropdown" 
+            aria-haspopup="true" 
+            aria-expanded="false"
+            onClick={markAllNotificationsAsRead}
+          >
             <i className="fas fa-bell fa-fw" />
-          <span className="badge badge-danger badge-counter">
-              {notifications.length > 3 ? "3+" : notifications.length}
+            <span className="badge badge-danger badge-counter">
+              {notifications.filter(n => !n.read).length > 3 ? "3+" : notifications.filter(n => !n.read).length}
             </span>
           </a>
           <div className="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="alertsDropdown">
             <h6 className="dropdown-header">Notifications</h6>
-            {notifications.slice(0, 3).map((notification, index) => (
+            {notifications.filter(n => !n.read).slice(0, 3).map((notification, index) => (
               <a key={index} className="dropdown-item d-flex align-items-center" href="#">
                 <div className="mr-3">
                   <div className="icon-circle bg-primary">
                     <i className="fas fa-file-alt text-white" />
                   </div>
                 </div>
-             <Link style={{ textDecoration: 'none' }} to={'/homeAdmin'}><div>
-                  <div className="small text-gray-900">{new Date(notification.date).toLocaleString()}</div>
-                  <span className="font-weight-bold">{notification.message}</span>
-                </div></Link> 
+                <Link style={{ textDecoration: 'none' }} to={'/homeAdmin'}>
+                  <div>
+                    <div className="small text-gray-900">{new Date(notification.date).toLocaleString()}</div>
+                    <span className="font-weight-bold">{notification.message}</span>
+                  </div>
+                </Link>
               </a>
             ))}
             <a className="dropdown-item text-center small text-gray-500" href="#">
@@ -139,7 +152,6 @@ function NavBar() {
           </div>
         </li>
         <li className="nav-item dropdown no-arrow mx-1">
-        
           <div className="dropdown-list dropdown-menu dropdown-menu-right shadow animated--grow-in" aria-labelledby="messagesDropdown">
             <h6 className="dropdown-header">Message Center</h6>
             <a className="dropdown-item d-flex align-items-center" href="#">
@@ -217,7 +229,7 @@ function NavBar() {
             <div className="dropdown-divider" />
             <a className="dropdown-item" onClick={logout} href="#" data-target="#logoutModal">
               <i className="fas fa-sign-out-alt fa-sm fa-fw mr-2 text-gray-400" />
-              Se deconnecter
+              Logout
             </a>
           </div>
         </li>
